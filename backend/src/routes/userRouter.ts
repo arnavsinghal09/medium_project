@@ -2,7 +2,8 @@ import {Hono} from 'hono'
 import { PrismaClient } from '@prisma/client/edge'
 import { withAccelerate } from '@prisma/extension-accelerate'
 import { sign } from 'hono/jwt'
-import {signUpInput,signInInput} from '@arnavsinghal0906/medium-common'
+import {signInInput,signUpInput} from '@arnavsinghal0906/medium-common'
+
 export const userRouter = new Hono<{
     Bindings:{
       DATABASE_URL:string,
@@ -22,6 +23,7 @@ userRouter.post("/signup",async (c)=>{
     }).$extends(withAccelerate())
   
     const body : signupBody = await c.req.json()
+
     //Zod Validation
     if(!signUpInput.safeParse(body).success){
       c.status(400)
@@ -37,6 +39,7 @@ userRouter.post("/signup",async (c)=>{
     })
   
     if (uniqueUserResult){
+      c.status(411)
       return c.json({
         msg: "Enter a unique username"
       })
